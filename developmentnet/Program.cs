@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.Channels;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,15 +11,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddRateLimiter(_ => _.AddFixedWindowLimiter(policyName: "fixedwindow", options =>
+builder.Services.AddRateLimiter(o=>o.AddFixedWindowLimiter(policyName: "ratepolicy", options =>
 {
-    options.Window = TimeSpan.FromSeconds(10);
+    options.QueueLimit = 1;
     options.PermitLimit = 1;
-    options.QueueLimit = 0;
-    options.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
-}).RejectionStatusCode = 401);
+    options.Window = TimeSpan.FromSeconds(5);
+    options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+}).RejectionStatusCode=401);
 
 var app = builder.Build();
+
+app.MapGet("/basicget", (string channel) => "Welcome to " + channel).RequireRateLimiting("ratepolicy");
+
+app.MapGet("/country", (string[] channel) => $"tag1 {channel[0]} &tag2 {channel[1]}");
+
+app.UseRateLimiter();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
