@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Primitives;
 using System.Threading.Channels;
 using System.Threading.RateLimiting;
 
@@ -23,7 +24,24 @@ var app = builder.Build();
 
 app.MapGet("/basicget", (string channel) => "Welcome to " + channel).RequireRateLimiting("ratepolicy");
 
-app.MapGet("/country", (string[] channel) => $"tag1 {channel[0]} &tag2 {channel[1]}");
+app.MapGet("/country", (StringValues channel) => $"tag1 {channel[0]} &tag2 {channel[1]}");
+
+app.MapPost("/todoaction/{id}", async (string id) =>
+{
+    return Results.Created($"/todoaction/{id}", id);
+}).WithOpenApi(genoptions =>
+{
+    var parameter = genoptions.Parameters[0];
+    parameter.Description = "Enter Input";
+    return genoptions;
+});
+
+app.MapPost("/upload", async (IFormFile file) =>
+{
+    string filename = "upload/" + file.FileName;
+    using var stream = File.OpenWrite(filename);
+    await file.CopyToAsync(stream);
+});
 
 app.UseRateLimiter();
 
