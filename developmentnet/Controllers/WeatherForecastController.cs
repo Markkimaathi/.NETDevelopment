@@ -1,3 +1,4 @@
+using developmentnet.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -30,6 +31,11 @@ namespace developmentnet.Controllers
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
             .ToArray();
+        }
+
+        public IActionResult GetChannelName([FromServices] IChannelservice channelservice)
+        {
+            return Ok(channelservice.GetChannelname());
         }
     }
 }
