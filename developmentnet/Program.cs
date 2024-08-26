@@ -43,6 +43,16 @@ app.MapPost("/upload", async (IFormFile file) =>
     await file.CopyToAsync(stream);
 });
 
+app.MapPost("/uploadcollection", async (IFormFileCollection collection) =>
+{
+    foreach (var file in collection)
+    {
+        string filename = "upload/" + file.FileName;
+        using var stream = File.OpenWrite(filename);
+        await file.CopyToAsync(stream);
+    }
+});
+
 app.UseRateLimiter();
 
 // Configure the HTTP request pipeline.
