@@ -33,6 +33,7 @@ namespace developmentnet.Controllers
             .ToArray();
         }
 
+        [HttpGet("GetChannelName")]
         public IActionResult GetChannelName([FromServices] IChannelservice channelservice)
         {
             return Ok(channelservice.GetChannelname());

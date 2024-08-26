@@ -1,3 +1,4 @@
+using developmentnet.Service;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Primitives;
 using System.Threading.Channels;
@@ -11,6 +12,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IChannelservice, ChannelService>();
 
 builder.Services.AddRateLimiter(o=>o.AddFixedWindowLimiter(policyName: "ratepolicy", options =>
 {
