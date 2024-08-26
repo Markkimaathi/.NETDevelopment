@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace developmentnet.Controllers
 {
@@ -18,6 +19,7 @@ namespace developmentnet.Controllers
             _logger = logger;
         }
 
+        [EnableRateLimiting("ratepolicy")]
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
